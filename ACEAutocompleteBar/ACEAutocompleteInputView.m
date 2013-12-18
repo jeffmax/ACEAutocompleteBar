@@ -237,13 +237,11 @@ NSUInteger DeviceSystemMajorVersion()
             width = [string boundingRectWithSize: self.frame.size
                                          options: NSStringDrawingUsesLineFragmentOrigin
                                       attributes: @{NSFontAttributeName : self.font}
-                                         context: nil].size.width;
+                                         context: nil].size.width + 60; //JMM this is necessary to support tags
             width = ceilf(width);
             width+=1;
-            NSLog(@"Comess");
         } else{
             width = [string sizeWithFont:self.font constrainedToSize:self.frame.size].width;
-            NSLog(@"Not comes");
         }
         
         if (width == 0) {
@@ -285,14 +283,11 @@ NSUInteger DeviceSystemMajorVersion()
     ACECell * cell = [tableView dequeueReusableCellWithIdentifier:cellId];
     if (cell == nil) {
         cell = [[ACECell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellId];
-		cell.bounds	= CGRectMake(0, 0, self.bounds.size.height, self.frame.size.height);
+		cell.bounds	= CGRectMake(0, 0, self.bounds.size.height, self.bounds.size.width);
 		cell.contentView.frame = cell.bounds;
 		cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.backgroundColor = [UIColor clearColor];
         
-        
-        
-		
         CGRect frame = CGRectInset(CGRectMake(0.0f, 0.0f, cell.bounds.size.height, cell.bounds.size.width), kDefaultMargin, kDefaultMargin);
 		rotatedView = [[UIView alloc] initWithFrame:frame];
         rotatedView.tag = kTagRotatedView;
@@ -326,7 +321,6 @@ NSUInteger DeviceSystemMajorVersion()
         
     } else {
         UILabel * textLabel = (UILabel *)[rotatedView viewWithTag:kTagLabelView];
-        
         // set the default properties
         textLabel.font = self.font;
         textLabel.textColor = self.textColor;
