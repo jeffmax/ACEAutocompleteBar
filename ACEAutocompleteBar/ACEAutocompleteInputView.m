@@ -121,7 +121,7 @@ NSUInteger DeviceSystemMajorVersion()
 - (UIFont *)font
 {
     if (_font == nil) {
-        _font = [UIFont boldSystemFontOfSize:18.0f];
+        _font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
     }
     return _font;
 }
@@ -186,6 +186,13 @@ NSUInteger DeviceSystemMajorVersion()
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
+    
+    if (range.location < [[textField text] length]){
+        self.suggestionList = @[];
+        [self.suggestionListView reloadData];
+
+        return YES;
+    }
     NSString * query = [textField.text stringByReplacingCharactersInRange:range withString:string];
     if (query.length >= [self.dataSource minimumCharactersToTrigger:self]) {
         [self.dataSource inputView:self itemsFor:query result:^(NSArray *items) {
@@ -233,16 +240,15 @@ NSUInteger DeviceSystemMajorVersion()
         NSString * string = [self stringForObjectAtIndex:indexPath.row];
         CGFloat width;
         
-        if (DeviceSystemMajorVersion() >= 7) {
-            width = [string boundingRectWithSize: self.frame.size
-                                         options: NSStringDrawingUsesLineFragmentOrigin
-                                      attributes: @{NSFontAttributeName : self.font}
-                                         context: nil].size.width + 60; //JMM this is necessary to support tags
-            width = ceilf(width);
-            width+=1;
-        } else{
-            width = [string sizeWithFont:self.font constrainedToSize:self.frame.size].width;
-        }
+        UILabel *test = [[UILabel alloc] init];
+        [test setText:string];
+        [test setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]];
+        [test sizeToFit];
+        width = test.frame.size.width + 40;
+
+        width = ceilf(width);
+        width+=1;
+
         
         if (width == 0) {
             // bigger than the screen
@@ -283,7 +289,7 @@ NSUInteger DeviceSystemMajorVersion()
     ACECell * cell = [tableView dequeueReusableCellWithIdentifier:cellId];
     if (cell == nil) {
         cell = [[ACECell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellId];
-		cell.bounds	= CGRectMake(0, 0, self.bounds.size.height, self.bounds.size.width);
+		cell.bounds	= CGRectMake(0, 0, self.bounds.size.height, self.frame.size.height);
 		cell.contentView.frame = cell.bounds;
 		cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.backgroundColor = [UIColor clearColor];
